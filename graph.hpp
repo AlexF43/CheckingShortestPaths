@@ -152,18 +152,61 @@ bool isSubgraph(const Graph<T>& H, const Graph<T>& G) {
 
 template <typename T>
 bool isTreePlusIsolated(const Graph<T>& G, int root) {
+    std::vector<bool> marked(G.size(), false);
+    std::queue<int> visited;
+    visited.push(root);
+    marked[root] = true;
+
+    while (!visited.empty()) {
+        int front = visited.front();
+        visited.pop();
+
+        for (const auto& [neighbour, _] : *(G.neighbours(front))) {
+            if (marked[neighbour]) {
+                return false;
+            }
+            visited.push(neighbour);
+            marked[neighbour] = true;
+        }
+    }
+
+    for (int i = 0; i < G.size(); i++) {
+        if (!G.neighbours(i)->empty() && !marked[i]) {
+            return false;
+        }
+    }
+
     return true;
 }
 
 template <typename T>
 std::vector<T> pathLengthsFromRoot(const Graph<T>& tree, int root) {
     std::vector<T> bestDistanceTo(tree.size());
+    std::vector<bool> marked(tree.size(), false);
+    std::queue<int> visited;
+    visited.push(root);
+    bestDistanceTo[root] = 0;
+    marked[root] = true;
+
+    while (!visited.empty()) {
+        int front = visited.front();
+        visited.pop();
+
+        for (const auto& [neighbour, weight] : *(tree.neighbours(front))) {
+            if (!marked[neighbour]) {
+                bestDistanceTo[neighbour] = bestDistanceTo[front] + weight;
+                visited.push(neighbour);
+                marked[neighbour] = true;
+            }
+        }
+    }
+
     return bestDistanceTo;
 }
 
 template <typename T>
-bool allEdgesRelaxed(const std::vector<T>& bestDistanceTo, const Graph<T>& G,
-                     int source) {
+bool allEdgesRelaxed(const std::vector<T>& bestDistanceTo, const Graph<T>& G, int source) {
+
     return true;
 }
 
