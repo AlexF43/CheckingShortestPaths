@@ -206,8 +206,21 @@ std::vector<T> pathLengthsFromRoot(const Graph<T>& tree, int root) {
 
 template <typename T>
 bool allEdgesRelaxed(const std::vector<T>& bestDistanceTo, const Graph<T>& G, int source) {
+    if (bestDistanceTo[source] != 0) {
+        return false;
+    }
 
-    return true;
+    std::vector<T> relaxedDistances = bestDistanceTo;
+
+    for (int v = 0; v < G.size(); ++v) {
+        for (const auto& [neighbour, _] : *(G.neighbours(v))) {
+            if (relaxedDistances[neighbour] > relaxedDistances[v] + G.getEdgeWeight(v, neighbour)) {
+                relaxedDistances[neighbour] = relaxedDistances[v] + G.getEdgeWeight(v, neighbour);
+            }
+        }
+    }
+
+    return relaxedDistances == bestDistanceTo;
 }
 
 #endif //CHECKINGSHORTESTPATH_GRAPH_HPP
